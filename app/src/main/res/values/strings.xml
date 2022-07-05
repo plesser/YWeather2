@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">YWeather2</string>
+    <string name="app_name">Геокодер + Погода от Яндекса</string>
+    <string name="temperature">Temperature:</string>
+    <string name="zero">0 C</string>
+    <string name="name_locality">name of the locality</string>
+    <string name="search">Search</string>
 </resources>

@@ -16,9 +16,8 @@ object Loader {
         val geocoderKey = Assets.getKeyGeocoder(application.getApplicationContext() as Application)
         val urlstr = "https://geocode-maps.yandex.ru/1.x/?apikey=${geocoderKey}&geocode=${city}&format=json"
         val url = URL(urlstr)
-        var myConnection: HttpURLConnection? = null
 
-        myConnection = url.openConnection() as HttpURLConnection
+        var myConnection = url.openConnection() as HttpURLConnection
         myConnection.readTimeout = 5000
         Thread{
             val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
@@ -31,9 +30,8 @@ object Loader {
     fun requestWeather(application: Application, lat: Double,lon: Double,block:(weather: Weather)->Unit){
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
         val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}")
-        var myConnection: HttpURLConnection? = null
 
-        myConnection = uri.openConnection() as HttpURLConnection
+        var myConnection = uri.openConnection() as HttpURLConnection
         myConnection.readTimeout = 5000
         myConnection.addRequestProperty("X-Yandex-API-Key",weatherKey)
         Thread{
