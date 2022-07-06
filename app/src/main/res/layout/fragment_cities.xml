@@ -12,6 +12,7 @@
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/name_locality"
+        android:text="Удельная"
         android:inputType="text"
         android:minHeight="48dp"
         android:textColorHint="#757575"

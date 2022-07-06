@@ -1,29 +1,34 @@
 package ru.plesser.yweather2.utils
 
 import android.app.Application
+import android.util.Log
 import com.google.gson.Gson
+import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.template.geocoder.Geocoder
 import ru.plesser.yweather2.data.template.weather.Weather
+import ru.plesser.yweather2.fragments.CitiesFragment
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.stream.Collectors
 
+private val TAG = "Loader"
+
 object Loader {
 
-    fun requestCities(application: Application, city: String, block:(geocoder:Geocoder)->Unit){
+    fun requestCities(application: Application, city: String): Geocoder{ //}, block:(geocoder:Geocoder)->Unit){
         val geocoderKey = Assets.getKeyGeocoder(application.getApplicationContext() as Application)
         val urlstr = "https://geocode-maps.yandex.ru/1.x/?apikey=${geocoderKey}&geocode=${city}&format=json"
+        Log.d(TAG, urlstr)
         val url = URL(urlstr)
 
         var myConnection = url.openConnection() as HttpURLConnection
         myConnection.readTimeout = 5000
-        Thread{
-            val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
-            val geocoder = Gson().fromJson(getLines(reader), Geocoder::class.java)
-            block(geocoder)
-        }.start()
+        val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
+        val geocoder = Gson().fromJson(getLines(reader), Geocoder::class.java)
+        //block(geocoder)
+        return geocoder
 
     }
 
@@ -39,6 +44,20 @@ object Loader {
             val weather = Gson().fromJson(getLines(reader), Weather::class.java)
             block(weather)
         }.start()
+    }
+
+    fun getCities(geocoder: Geocoder) : ArrayList<City>{
+        val members = geocoder.response.GeoObjectCollection.featureMember
+        var cities: ArrayList<City> = ArrayList()
+        for (member in members){
+            val pos = member.GeoObject.Point.pos
+            val lat = pos.split(" ")[0].toDouble()
+            val lon = pos.split(" ")[1].toDouble()
+            println("${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
+            val city: City = City(member.GeoObject.metaDataProperty.GeocoderMetaData.text, lat, lon)
+            cities.add(city)
+        }
+        return cities
     }
 
     fun getLines(reader: BufferedReader): String {
