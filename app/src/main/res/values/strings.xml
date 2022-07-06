@@ -4,4 +4,7 @@
     <string name="zero">0 C</string>
     <string name="name_locality">name of the locality</string>
     <string name="search">Search</string>
+    <string name="splitter"> : </string>
+    <string name="real">real</string>
+    <string name="feel">feel</string>
 </resources>

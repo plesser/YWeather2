@@ -18,9 +18,11 @@ import ru.plesser.yweather2.utils.Loader
 
 private val TAG = "CityFragment"
 
-class CitiesFragment : Fragment() {
+class CitiesFragment : Fragment(), CitiesAdapter.Listener {
+
     private lateinit var binding: FragmentCitiesBinding
     private lateinit var viewModel: CitiesViewModel
+    lateinit var listener: Listener
 
     private lateinit var adapter: CitiesAdapter
     private var citiesList: ArrayList<City> = Data.newInstance().cities
@@ -42,7 +44,7 @@ class CitiesFragment : Fragment() {
         this.geocoderKey = Assets.getKeyGeocoder(requireActivity().getApplicationContext() as Application)
 
         binding.citiesRecyclerview.layoutManager = LinearLayoutManager(activity)
-        adapter = CitiesAdapter(this.citiesList, activity)
+        adapter = CitiesAdapter(this.citiesList, activity, this@CitiesFragment)
         binding.citiesRecyclerview.adapter = adapter
 
         binding.searchButton.setOnClickListener{
@@ -59,7 +61,8 @@ class CitiesFragment : Fragment() {
         Thread{
             val geocoder = Loader.requestCities(requireActivity().application, city)
             Log.d(TAG, geocoder.toString())
-            citiesList = Loader.getCities(geocoder)
+            citiesList.clear()
+            citiesList.addAll(Loader.getCities(geocoder))
             activity?.runOnUiThread {
                 Log.d(TAG, "update recyclerview")
                 adapter.citiesList = citiesList
@@ -67,6 +70,17 @@ class CitiesFragment : Fragment() {
             }
         }.start()
     }
+
+    override fun onCityClick(id: Int) {
+        Log.d(TAG, "position fragment is ${id}")
+        listener.onCityClick(id)
+    }
+
+
+    interface Listener{
+        fun onCityClick(id: Int)
+    }
+
 
     companion object {
         fun newInstance() = CitiesFragment()

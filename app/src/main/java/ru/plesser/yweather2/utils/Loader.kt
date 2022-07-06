@@ -32,18 +32,16 @@ object Loader {
 
     }
 
-    fun requestWeather(application: Application, lat: Double,lon: Double,block:(weather: Weather)->Unit){
+    fun requestWeather(application: Application, lat: Double,lon: Double): Weather{
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
         val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}")
 
         var myConnection = uri.openConnection() as HttpURLConnection
         myConnection.readTimeout = 5000
         myConnection.addRequestProperty("X-Yandex-API-Key",weatherKey)
-        Thread{
-            val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
-            val weather = Gson().fromJson(getLines(reader), Weather::class.java)
-            block(weather)
-        }.start()
+        val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
+        val weather = Gson().fromJson(getLines(reader), Weather::class.java)
+        return weather
     }
 
     fun getCities(geocoder: Geocoder) : ArrayList<City>{

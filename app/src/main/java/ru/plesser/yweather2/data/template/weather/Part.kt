@@ -8,7 +8,7 @@ data class Part(
     val icon: String,
     val part_name: String,
     val polar: Boolean,
-    val prec_mm: Int,
+    val prec_mm: Double,
     val prec_period: Int,
     val prec_prob: Int,
     val pressure_mm: Int,

@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23854166666666668" />
         <entry key="app/src/main/res/layout/fragment_cities.xml" value="0.23854166666666668" />
+        <entry key="app/src/main/res/layout/fragment_weather.xml" value="0.5" />
       </map>
     </option>
   </component>
