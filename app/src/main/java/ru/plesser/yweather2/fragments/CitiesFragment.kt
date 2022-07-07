@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.plesser.yweather2.adapters.CitiesAdapter
 import ru.plesser.yweather2.data.City
@@ -41,20 +43,44 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.geocoderKey = Assets.getKeyGeocoder(requireActivity().getApplicationContext() as Application)
+        viewModel = ViewModelProvider(this).get(CitiesViewModel::class.java)
+
+        this.geocoderKey = Assets.getKeyGeocoder(requireActivity().applicationContext as Application)
 
         binding.citiesRecyclerview.layoutManager = LinearLayoutManager(activity)
         adapter = CitiesAdapter(this.citiesList, activity, this@CitiesFragment)
         binding.citiesRecyclerview.adapter = adapter
 
+
+
+//        binding.searchButton.setOnClickListener{
+//            if (binding.cityEdittext.text.toString().length < 5){
+//                Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
+//            } else {
+//                //viewModel.requestCity(binding.cityEdittext.text.toString())
+//                getData(binding.cityEdittext.text.toString())
+//            }
+//        }
+
+
         binding.searchButton.setOnClickListener{
             if (binding.cityEdittext.text.toString().length < 5){
                 Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
             } else {
-                //viewModel.requestCity(binding.cityEdittext.text.toString())
-                getData(binding.cityEdittext.text.toString())
+                viewModel.fetchCity(geocoderKey, binding.cityEdittext.text.toString())
             }
         }
+
+        viewModel.jsonLiveData.observe(
+            viewLifecycleOwner,
+            Observer {
+                geocoder ->
+                citiesList.clear()
+                citiesList.addAll(Loader.getCities(geocoder))
+                adapter.citiesList = citiesList
+                adapter.notifyDataSetChanged()
+            }
+        )
     }
 
     private fun getData(city: String) {

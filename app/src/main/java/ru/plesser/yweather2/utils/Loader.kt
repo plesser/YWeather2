@@ -19,6 +19,11 @@ object Loader {
 
     fun requestCities(application: Application, city: String): Geocoder{ //}, block:(geocoder:Geocoder)->Unit){
         val geocoderKey = Assets.getKeyGeocoder(application.getApplicationContext() as Application)
+        return requestCities(geocoderKey, city)
+
+    }
+
+    fun requestCities(geocoderKey: String, city: String): Geocoder{ //}, block:(geocoder:Geocoder)->Unit){
         val urlstr = "https://geocode-maps.yandex.ru/1.x/?apikey=${geocoderKey}&geocode=${city}&format=json"
         Log.d(TAG, urlstr)
         val url = URL(urlstr)
@@ -31,6 +36,7 @@ object Loader {
         return geocoder
 
     }
+
 
     fun requestWeather(application: Application, lat: Double,lon: Double): Weather{
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
