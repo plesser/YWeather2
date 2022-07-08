@@ -48,6 +48,7 @@ object Loader {
         val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
         val weather = Gson().fromJson(getLines(reader), Weather::class.java)
         Log.d(TAG, weather.toString())
+        Log.d(TAG, "lat=${lat}&lon=${lon}")
         Log.d(TAG, "fact temp " + weather.fact.temp)
         Log.d(TAG, "feel temp " + weather.fact.feels_like)
 
@@ -59,8 +60,8 @@ object Loader {
         val cities: ArrayList<City> = ArrayList()
         for (member in members){
             val pos = member.GeoObject.Point.pos
-            val lat = pos.split(" ")[0].toDouble()
-            val lon = pos.split(" ")[1].toDouble()
+            val lat = pos.split(" ")[1].toDouble()
+            val lon = pos.split(" ")[0].toDouble()
             println("${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
             val city: City = City(member.GeoObject.metaDataProperty.GeocoderMetaData.text, lat, lon)
             cities.add(city)
