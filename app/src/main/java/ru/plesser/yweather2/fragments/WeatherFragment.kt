@@ -34,12 +34,16 @@ class WeatherFragment: Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.nameTextView.text = citiesList[position].name
-        binding.latTextView.text = citiesList[position].lat.toString()
-        binding.lonTextView.text = citiesList[position].lon.toString()
+        initViews()
 
         getData()
 
+    }
+
+    private fun initViews() {
+        binding.nameTextView.text = citiesList[position].name
+        binding.latTextView.text = citiesList[position].lat.toString()
+        binding.lonTextView.text = citiesList[position].lon.toString()
     }
 
     private fun getData() {

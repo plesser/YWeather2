@@ -42,17 +42,21 @@ object Loader {
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
         val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}")
 
-        var myConnection = uri.openConnection() as HttpURLConnection
+        val myConnection = uri.openConnection() as HttpURLConnection
         myConnection.readTimeout = 5000
         myConnection.addRequestProperty("X-Yandex-API-Key",weatherKey)
         val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
         val weather = Gson().fromJson(getLines(reader), Weather::class.java)
+        Log.d(TAG, weather.toString())
+        Log.d(TAG, "fact temp " + weather.fact.temp)
+        Log.d(TAG, "feel temp " + weather.fact.feels_like)
+
         return weather
     }
 
     fun getCities(geocoder: Geocoder) : ArrayList<City>{
         val members = geocoder.response.GeoObjectCollection.featureMember
-        var cities: ArrayList<City> = ArrayList()
+        val cities: ArrayList<City> = ArrayList()
         for (member in members){
             val pos = member.GeoObject.Point.pos
             val lat = pos.split(" ")[0].toDouble()
