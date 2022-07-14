@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
@@ -55,7 +54,7 @@ class WeatherFragment: Fragment(){
         initViews()
 
         //getData()
-        getDataRetrofit()
+        getDataData2()
 
     }
 
@@ -81,7 +80,7 @@ class WeatherFragment: Fragment(){
         }.start()
     }
 
-    private fun getDataRetrofit() {
+    private fun getDataData2() {
         val weatherLiveData:LiveData<String> = viewModel.requestWeatherRetrofit(
             requireActivity().application,
             citiesList[position].lat,

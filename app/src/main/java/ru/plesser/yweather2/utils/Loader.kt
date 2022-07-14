@@ -65,8 +65,14 @@ object Loader {
     }
 
     fun requestWeatherRetrofit(application: Application, lat: Double,lon: Double): LiveData<String> {
-        val responseLiveData: MutableLiveData<String> = MutableLiveData()
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
+
+        return requestWeatherRetrofit(weatherKey, lat, lon)
+
+    }
+
+    fun requestWeatherRetrofit(weatherKey: String, lat: Double,lon: Double): LiveData<String> {
+        val responseLiveData: MutableLiveData<String> = MutableLiveData()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.weather.yandex.ru/")
@@ -92,6 +98,7 @@ object Loader {
 
         return responseLiveData
     }
+
 
     fun getCities(geocoder: Geocoder) : ArrayList<City>{
         val members = geocoder.response.GeoObjectCollection.featureMember

@@ -13,36 +13,38 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.plesser.yweather2.api.WeatherAPI
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.utils.Assets
+import ru.plesser.yweather2.utils.Loader
 
 private val TAG = "WeatherViewModel"
 
 class WeatherViewModel: ViewModel() {
 
     fun requestWeatherRetrofit(application: Application, lat: Double, lon: Double): LiveData<String> {
-        val responseLiveData: MutableLiveData<String> = MutableLiveData()
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.weather.yandex.ru/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
+        val responseLiveData: LiveData<String> = Loader.requestWeatherRetrofit(weatherKey, lat, lon)
 
-        val weatherAPI: WeatherAPI = retrofit.create(WeatherAPI::class.java)
-
-        val weatherRequest: Call<String> = weatherAPI.getWeather(weatherKey, lat, lon)
-        weatherRequest.enqueue(object : Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d(TAG, "Failed to fetch weather", t)
-            }
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
-                Log.d(TAG, "Response received " + response.body())
-                //weather = Gson().fromJson(response.body(), Weather::class.java)
-                responseLiveData.value = response.body()
-            }
-        })
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://api.weather.yandex.ru/")
+//            .addConverterFactory(ScalarsConverterFactory.create())
+//            .build()
+//
+//        val weatherAPI: WeatherAPI = retrofit.create(WeatherAPI::class.java)
+//
+//        val weatherRequest: Call<String> = weatherAPI.getWeather(weatherKey, lat, lon)
+//        weatherRequest.enqueue(object : Callback<String> {
+//            override fun onFailure(call: Call<String>, t: Throwable) {
+//                Log.d(TAG, "Failed to fetch weather", t)
+//            }
+//            override fun onResponse(
+//                call: Call<String>,
+//                response: Response<String>
+//            ) {
+//                Log.d(TAG, "Response received " + response.body())
+//                //weather = Gson().fromJson(response.body(), Weather::class.java)
+//                responseLiveData.value = response.body()
+//            }
+//        })
 
         return responseLiveData
     }
