@@ -11,14 +11,17 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
+import ru.plesser.yweather2.MainApp
 import ru.plesser.yweather2.R
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
+import ru.plesser.yweather2.data.room.WeatherEntity
 import ru.plesser.yweather2.data.template.weather.Weather
 import ru.plesser.yweather2.databinding.FragmentWeatherBinding
 import ru.plesser.yweather2.utils.Assets
@@ -28,7 +31,11 @@ import ru.plesser.yweather2.utils.Loader
 private val TAG = "WeatherFragment"
 
 class WeatherFragment: Fragment(){
-    private lateinit var viewModel: WeatherViewModel
+//    private lateinit var viewModel: WeatherViewModel
+
+    private val viewModel : WeatherViewModel by activityViewModels {
+                    WeatherViewModel.WeatherViewModelFactory((context?.applicationContext as MainApp).database)
+}
     private lateinit var binding: FragmentWeatherBinding
     private var citiesList: ArrayList<City> = Data.newInstance().cities
     lateinit var weather: Weather
@@ -49,7 +56,7 @@ class WeatherFragment: Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
 
         this.weatherKey = Assets.getKeyYWeather(requireActivity().applicationContext as Application)
 
@@ -97,6 +104,9 @@ class WeatherFragment: Fragment(){
             binding.feeltempTextView.text = weather.fact.feels_like.toString()
             binding.windImageView.setImageDrawable(
                 activity?.let { ContextCompat.getDrawable(it.applicationContext, getDirWind(weather.fact.wind_dir)) })
+
+
+            viewModel.insertWeather(citiesList[position], weather)
 
             Log.d(TAG, "icon is " + weather.fact.icon)
             val icon: String =
