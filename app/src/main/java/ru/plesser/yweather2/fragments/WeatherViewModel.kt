@@ -1,6 +1,7 @@
 package ru.plesser.yweather2.fragments
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,22 +14,36 @@ import ru.plesser.yweather2.data.room.WeatherEntity
 import ru.plesser.yweather2.data.template.weather.Weather
 import ru.plesser.yweather2.utils.Assets
 import ru.plesser.yweather2.utils.Loader
+import java.util.concurrent.Executors
 
 private val TAG = "WeatherViewModel"
 private const val DATABASE_NAME = "weather-database"
 
-class WeatherViewModel(database : WeatherDatabase): ViewModel() {
-    val dao = database.getDao()
+class WeatherViewModel(database : WeatherDatabase): ViewModel(){
 
-    fun requestWeatherRetrofit(application: Application, lat: Double, lon: Double): LiveData<String> {
+    interface Callback{
+        fun setStatus(status: String)
+    }
+
+    lateinit var callback:Callback
+
+    val dao = database.getDao()
+    private val executor = Executors.newSingleThreadExecutor()
+
+    fun requestWeatherData(application: Application, lat: Double, lon: Double): LiveData<String> {
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
         val responseLiveData: LiveData<String> = Loader.requestWeatherRetrofit(weatherKey, lat, lon)
-
+        Log.d(TAG, "responseLiveData is " + responseLiveData.value.toString())
+        if (responseLiveData.value == null){
+            callback.setStatus("offline")
+        } else {
+            callback.setStatus("online")
+        }
         return responseLiveData
     }
 
     fun insertWeather(city: City, weather: Weather) {
-        viewModelScope.launch {
+        executor.execute{
             val weatherEntity: WeatherEntity = WeatherEntity(null,
                                                                 city.name,
                                                                 city.lat,
@@ -53,4 +68,5 @@ class WeatherViewModel(database : WeatherDatabase): ViewModel() {
         }
 
     }
+
 }

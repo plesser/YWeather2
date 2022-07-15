@@ -10,7 +10,6 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.fragment.app.activityViewModels
 import coil.ImageLoader
 import coil.decode.SvgDecoder
@@ -21,7 +20,6 @@ import ru.plesser.yweather2.MainApp
 import ru.plesser.yweather2.R
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
-import ru.plesser.yweather2.data.room.WeatherEntity
 import ru.plesser.yweather2.data.template.weather.Weather
 import ru.plesser.yweather2.databinding.FragmentWeatherBinding
 import ru.plesser.yweather2.utils.Assets
@@ -30,7 +28,7 @@ import ru.plesser.yweather2.utils.Loader
 
 private val TAG = "WeatherFragment"
 
-class WeatherFragment: Fragment(){
+class WeatherFragment: Fragment(), WeatherViewModel.Callback{
 //    private lateinit var viewModel: WeatherViewModel
 
     private val viewModel : WeatherViewModel by activityViewModels {
@@ -57,13 +55,14 @@ class WeatherFragment: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //viewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        viewModel.callback = WeatherFragment@this
 
         this.weatherKey = Assets.getKeyYWeather(requireActivity().applicationContext as Application)
 
         initViews()
 
         //getData()
-        getDataData2()
+        getData2()
 
     }
 
@@ -89,8 +88,8 @@ class WeatherFragment: Fragment(){
         }.start()
     }
 
-    private fun getDataData2() {
-        val weatherLiveData:LiveData<String> = viewModel.requestWeatherRetrofit(
+    private fun getData2() {
+        val weatherLiveData:LiveData<String> = viewModel.requestWeatherData(
             requireActivity().application,
             citiesList[position].lat,
             citiesList[position].lon)
@@ -150,6 +149,10 @@ class WeatherFragment: Fragment(){
 
     companion object {
         fun newInstance() = WeatherFragment()
+    }
+
+    override fun setStatus(status: String) {
+        binding.statusTextview.text = status
     }
 
 }

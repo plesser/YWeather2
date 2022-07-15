@@ -26,6 +26,7 @@ private val TAG = "Loader"
 
 object Loader {
 
+
     fun requestCities(application: Application, city: String): Geocoder{ //}, block:(geocoder:Geocoder)->Unit){
         val geocoderKey = Assets.getKeyGeocoder(application.getApplicationContext() as Application)
         return requestCities(geocoderKey, city)
