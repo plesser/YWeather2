@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_arrow_north_east.xml" value="0.188" />
+        <entry key="app/src/main/res/drawable/ic_arrow_west.xml" value="0.1215" />
+        <entry key="app/src/main/res/drawable/ic_south_east.xml" value="0.188" />
+        <entry key="app/src/main/res/drawable/ic_south_west.xml" value="0.2865" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23854166666666668" />
         <entry key="app/src/main/res/layout/fragment_cities.xml" value="0.23854166666666668" />
         <entry key="app/src/main/res/layout/fragment_weather.xml" value="0.5" />

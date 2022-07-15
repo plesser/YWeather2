@@ -7,4 +7,6 @@
     <string name="splitter"> : </string>
     <string name="real">real</string>
     <string name="feel">feel</string>
+    <string name="weather">weather</string>
+    <string name="wind">wind</string>
 </resources>

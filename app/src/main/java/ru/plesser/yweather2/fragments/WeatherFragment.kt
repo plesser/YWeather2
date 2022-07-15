@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
+import ru.plesser.yweather2.R
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
 import ru.plesser.yweather2.data.template.weather.Weather
@@ -93,16 +95,32 @@ class WeatherFragment: Fragment(){
             weather = Gson().fromJson(responseString, Weather::class.java)
             binding.realtempTextView.text = weather.fact.temp.toString()
             binding.feeltempTextView.text = weather.fact.feels_like.toString()
+            binding.windImageView.setImageDrawable(
+                activity?.let { ContextCompat.getDrawable(it.applicationContext, getDirWind(weather.fact.wind_dir)) })
+
             Log.d(TAG, "icon is " + weather.fact.icon)
             val icon: String =
                 "https://yastatic.net/weather/i/icons/funky/dark/${weather.fact.icon}.svg"
             Log.d(TAG, icon)
-
             Picasso.get().load("https://media.citroen.ru/design/frontend/images/logo.png").into(binding.citroenImageView);
             binding.weatherImageView.loadSvg(icon)
         }
 
     }
+
+    private fun getDirWind(windDir: String) =
+        when (windDir){
+            "e" -> R.drawable.ic_arrow_east
+            "n" -> R.drawable.ic_arrow_north
+            "ne" -> R.drawable.ic_arrow_north_east
+            "nw" -> R.drawable.ic_arrow_north_west
+            "s" -> R.drawable.ic_arrow_south
+            "se" -> R.drawable.ic_arrow_east
+            "sw" -> R.drawable.ic_arrow_north_west
+            "w" -> R.drawable.ic_arrow_west
+            else -> R.drawable.ic_silence
+        }
+
 
     fun ImageView.loadSvg(url: String) {
         val imageLoader = ImageLoader.Builder(this.context)
