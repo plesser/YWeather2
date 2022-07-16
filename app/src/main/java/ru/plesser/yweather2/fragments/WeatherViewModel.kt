@@ -39,6 +39,7 @@ class WeatherViewModel(database : WeatherDatabase): ViewModel(){
         } else {
             callback.setStatus("online")
         }
+        Log.d(TAG, "lala")
         return responseLiveData
     }
 

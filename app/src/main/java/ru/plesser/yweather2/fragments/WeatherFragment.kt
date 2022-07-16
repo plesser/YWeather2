@@ -152,6 +152,7 @@ class WeatherFragment: Fragment(), WeatherViewModel.Callback{
     }
 
     override fun setStatus(status: String) {
+        Log.d(TAG, "weatherFragment status is $status")
         binding.statusTextview.text = status
     }
 

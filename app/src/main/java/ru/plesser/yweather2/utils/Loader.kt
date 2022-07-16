@@ -94,6 +94,7 @@ object Loader {
                 Log.d(TAG, "Response received " + response.body())
                 //weather = Gson().fromJson(response.body(), Weather::class.java)
                 responseLiveData.value = response.body()
+
             }
         })
 
