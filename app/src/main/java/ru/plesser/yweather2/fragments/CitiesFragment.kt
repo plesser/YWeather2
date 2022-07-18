@@ -23,7 +23,7 @@ private val TAG = "CityFragment"
 class CitiesFragment : Fragment(), CitiesAdapter.Listener {
 
     private lateinit var binding: FragmentCitiesBinding
-    private lateinit var viewModel: CitiesViewModel
+    private lateinit var viewModel: YWeatherViewModel
     lateinit var listener: Listener
 
     private lateinit var adapter: CitiesAdapter
@@ -43,7 +43,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(CitiesViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(YWeatherViewModel::class.java)
 
         this.geocoderKey = Assets.getKeyGeocoder(requireActivity().applicationContext as Application)
 
@@ -51,50 +51,27 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
         adapter = CitiesAdapter(this.citiesList, activity, this@CitiesFragment)
         binding.citiesRecyclerview.adapter = adapter
 
-
-
-//        binding.searchButton.setOnClickListener{
-//            if (binding.cityEdittext.text.toString().length < 5){
-//                Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
-//            } else {
-//                //viewModel.requestCity(binding.cityEdittext.text.toString())
-//                getData(binding.cityEdittext.text.toString())
-//            }
-//        }
-
-
         binding.searchButton.setOnClickListener{
             if (binding.cityEdittext.text.toString().length < 5){
                 Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
             } else {
-                viewModel.fetchCity(geocoderKey, binding.cityEdittext.text.toString())
+                viewModel.fetchCities(geocoderKey, binding.cityEdittext.text.toString())
             }
         }
 
-        viewModel.jsonLiveData.observe(
+        viewModel.cityLiveData.observe(
             viewLifecycleOwner,
             Observer {
                 geocoder ->
+                Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
                 citiesList.clear()
-                citiesList.addAll(Loader.getCities(geocoder))
+                geocoder?.let { Loader.getCities(it) }?.let { citiesList.addAll(it) }
+                Log.d(TAG, citiesList.toString())
                 adapter.citiesList = citiesList
                 adapter.notifyDataSetChanged()
             }
         )
-    }
 
-    private fun getData(city: String) {
-        Thread{
-            val geocoder = Loader.requestCities(requireActivity().application, city)
-            Log.d(TAG, geocoder.toString())
-            citiesList.clear()
-            citiesList.addAll(Loader.getCities(geocoder))
-            activity?.runOnUiThread {
-                Log.d(TAG, "update recyclerview")
-                adapter.citiesList = citiesList
-                adapter.notifyDataSetChanged()
-            }
-        }.start()
     }
 
     override fun onCityClick(id: Int) {

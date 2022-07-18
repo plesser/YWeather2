@@ -15,6 +15,7 @@ import ru.plesser.yweather2.data.template.geocoder.Geocoder
 import ru.plesser.yweather2.data.template.weather.Weather
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import ru.plesser.yweather2.api.CitiesAPI
 import ru.plesser.yweather2.api.WeatherAPI
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -25,7 +26,6 @@ import java.util.stream.Collectors
 private val TAG = "Loader"
 
 object Loader {
-
 
     fun requestCities(application: Application, city: String): Geocoder{ //}, block:(geocoder:Geocoder)->Unit){
         val geocoderKey = Assets.getKeyGeocoder(application.getApplicationContext() as Application)
@@ -47,6 +47,37 @@ object Loader {
 
     }
 
+
+    fun requestCitiesRetrofit(geocoderKey: String, city: String): MutableLiveData<Geocoder> {
+        val responseLiveData: MutableLiveData<Geocoder> = MutableLiveData()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.weather.yandex.ru/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+
+        val citiesAPI: CitiesAPI = retrofit.create(CitiesAPI::class.java)
+        val citiesRequest: Call<String> = citiesAPI.getWeather(geocoderKey, city)
+
+        citiesRequest.enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(TAG, "Failed to fetch weather", t)
+            }
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                Log.d(TAG, "Response received " + response.body().toString())
+                //weather = Gson().fromJson(response.body(), Weather::class.java)
+                val geocoder = Gson().fromJson(response.body(), Geocoder::class.java)
+                responseLiveData.value = geocoder
+
+            }
+        })
+
+        return responseLiveData
+
+    }
 
     fun requestWeather(application: Application, lat: Double,lon: Double): Weather{
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
@@ -86,12 +117,13 @@ object Loader {
         weatherRequest.enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Log.d(TAG, "Failed to fetch weather", t)
+                responseLiveData.value = "offline"
             }
             override fun onResponse(
                 call: Call<String>,
                 response: Response<String>
             ) {
-                Log.d(TAG, "Response received " + response.body())
+                Log.d(TAG, "Response received " + response.body().toString())
                 //weather = Gson().fromJson(response.body(), Weather::class.java)
                 responseLiveData.value = response.body()
 
@@ -109,7 +141,8 @@ object Loader {
             val pos = member.GeoObject.Point.pos
             val lat = pos.split(" ")[1].toDouble()
             val lon = pos.split(" ")[0].toDouble()
-            println("${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
+            //println("${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
+            Log.d(TAG, "${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
             val city: City = City(member.GeoObject.metaDataProperty.GeocoderMetaData.text, lat, lon)
             cities.add(city)
         }
