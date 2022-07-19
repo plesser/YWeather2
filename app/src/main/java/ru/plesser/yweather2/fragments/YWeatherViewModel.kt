@@ -1,12 +1,12 @@
 package ru.plesser.yweather2.fragments
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.plesser.yweather2.data.WeatherRepository
 import ru.plesser.yweather2.data.template.geocoder.Geocoder
-import ru.plesser.yweather2.utils.Loader
 
 class YWeatherViewModel: ViewModel() {
 
