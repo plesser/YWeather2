@@ -63,6 +63,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
             viewLifecycleOwner,
             Observer {
                 geocoder ->
+                Log.d(TAG, "------------------------------------------------------- 1")
                 Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
                 citiesList.clear()
                 geocoder?.let { Loader.getCities(it) }?.let { citiesList.addAll(it) }

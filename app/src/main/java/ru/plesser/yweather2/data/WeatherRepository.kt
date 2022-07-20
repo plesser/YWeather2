@@ -28,6 +28,7 @@ class WeatherRepository private constructor(context: Context) {
         val geocdoreLiveData = RRequests.requestCitiesRetrofit(geocoderKey, city)
         geocdoreLiveData.observeForever(){
             gecodervalue ->
+                Log.d(TAG, "------------------------------------------------------- 2")
                 Log.d(TAG, gecodervalue)
                 geocoder.value = Gson().fromJson(gecodervalue, Geocoder::class.java)
         }
