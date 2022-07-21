@@ -27,12 +27,12 @@ class MainActivity : AppCompatActivity(), CitiesFragment.Listener {
 
     override fun onCityClick(id: Int) {
         Log.d(TAG, "position activity is ${id}")
-        val fragment = WeatherFragment.newInstance()
+        val fragment = WeatherFragment.newInstance(id)
         supportFragmentManager
             .beginTransaction()
             .addToBackStack(null)
             .replace(R.id.fragment_container, fragment)
             .commit()
-        fragment.position = id
+        //fragment.position = id
     }
 }

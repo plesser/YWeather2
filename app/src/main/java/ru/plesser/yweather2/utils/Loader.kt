@@ -48,37 +48,6 @@ object Loader {
     }
 
 
-    fun requestCitiesRetrofit(geocoderKey: String, city: String): MutableLiveData<Geocoder> {
-        val responseLiveData: MutableLiveData<Geocoder> = MutableLiveData()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.weather.yandex.ru/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        val citiesAPI: CitiesAPI = retrofit.create(CitiesAPI::class.java)
-        val citiesRequest: Call<String> = citiesAPI.getWeather(geocoderKey, city)
-
-        citiesRequest.enqueue(object : Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d(TAG, "Failed to fetch weather", t)
-            }
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
-                Log.d(TAG, "Response received " + response.body().toString())
-                //weather = Gson().fromJson(response.body(), Weather::class.java)
-                val geocoder = Gson().fromJson(response.body(), Geocoder::class.java)
-                responseLiveData.value = geocoder
-
-            }
-        })
-
-        return responseLiveData
-
-    }
-
     fun requestWeather(application: Application, lat: Double,lon: Double): Weather{
         val weatherKey = Assets.getKeyYWeather(application.getApplicationContext() as Application)
         val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}")
@@ -105,30 +74,30 @@ object Loader {
 
     fun requestWeatherRetrofit(weatherKey: String, lat: Double,lon: Double): LiveData<String> {
         val responseLiveData: MutableLiveData<String> = MutableLiveData()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.weather.yandex.ru/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        val weatherAPI: WeatherAPI = retrofit.create(WeatherAPI::class.java)
-
-        val weatherRequest: Call<String> = weatherAPI.getWeather(weatherKey, lat, lon)
-        weatherRequest.enqueue(object : Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d(TAG, "Failed to fetch weather", t)
-                responseLiveData.value = "offline"
-            }
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
-                Log.d(TAG, "Response received " + response.body().toString())
-                //weather = Gson().fromJson(response.body(), Weather::class.java)
-                responseLiveData.value = response.body()
-
-            }
-        })
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://api.weather.yandex.ru/")
+//            .addConverterFactory(ScalarsConverterFactory.create())
+//            .build()
+//
+//        val weatherAPI: WeatherAPI = retrofit.create(WeatherAPI::class.java)
+//
+//        val weatherRequest: Call<String> = weatherAPI.getWeather(weatherKey, lat, lon)
+//        weatherRequest.enqueue(object : Callback<String> {
+//            override fun onFailure(call: Call<String>, t: Throwable) {
+//                Log.d(TAG, "Failed to fetch weather", t)
+//                responseLiveData.value = "offline"
+//            }
+//            override fun onResponse(
+//                call: Call<String>,
+//                response: Response<String>
+//            ) {
+//                Log.d(TAG, "Response received " + response.body().toString())
+//                //weather = Gson().fromJson(response.body(), Weather::class.java)
+//                responseLiveData.value = response.body()
+//
+//            }
+//        })
 
         return responseLiveData
     }

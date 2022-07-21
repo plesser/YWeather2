@@ -12,5 +12,5 @@ interface WeatherAPI {
         @Header("X-Yandex-API-Key") key: String,
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
-    ): Call<String>
+    ): Call<Weather>
 }

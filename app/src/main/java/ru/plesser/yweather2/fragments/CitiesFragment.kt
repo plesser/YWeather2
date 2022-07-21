@@ -8,12 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.plesser.yweather2.adapters.CitiesAdapter
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
+import ru.plesser.yweather2.data.RRequests
+import ru.plesser.yweather2.data.template.geocoder.Geocoder
 import ru.plesser.yweather2.databinding.FragmentCitiesBinding
 import ru.plesser.yweather2.utils.Assets
 import ru.plesser.yweather2.utils.Loader
@@ -45,33 +49,34 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
 
         viewModel = ViewModelProvider(this).get(YWeatherViewModel::class.java)
 
-        this.geocoderKey = Assets.getKeyGeocoder(requireActivity().applicationContext as Application)
+        geocoderKey = Assets.getKeyGeocoder(requireActivity().applicationContext as Application)
 
         binding.citiesRecyclerview.layoutManager = LinearLayoutManager(activity)
         adapter = CitiesAdapter(this.citiesList, activity, this@CitiesFragment)
         binding.citiesRecyclerview.adapter = adapter
 
+
+
         binding.searchButton.setOnClickListener{
             if (binding.cityEdittext.text.toString().length < 5){
                 Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
             } else {
-                viewModel.fetchCities(geocoderKey, binding.cityEdittext.text.toString())
+                var geocoderLiveData = viewModel.requestCities(geocoderKey, binding.cityEdittext.text.toString())
+                geocoderLiveData.observe(
+                    viewLifecycleOwner,
+                    Observer {
+                            geocoder ->
+                        Log.d(TAG, "------------------------------------------------------- 1")
+                        Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
+                citiesList.clear()
+                citiesList.addAll(Loader.getCities(geocoder))
+                adapter.citiesList = citiesList
+                adapter.notifyDataSetChanged()
+                    }
+                )
             }
         }
 
-        viewModel.cityLiveData.observe(
-            viewLifecycleOwner,
-            Observer {
-                geocoder ->
-                Log.d(TAG, "------------------------------------------------------- 1")
-                Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
-                citiesList.clear()
-                geocoder?.let { Loader.getCities(it) }?.let { citiesList.addAll(it) }
-                Log.d(TAG, citiesList.toString())
-                adapter.citiesList = citiesList
-                adapter.notifyDataSetChanged()
-            }
-        )
 
     }
 
