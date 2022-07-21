@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:padding="8dp"
         tools:text="status"
-        android:text="@string/online"/>
+        android:text="@string/status"/>
 
     <TextView
         android:id="@+id/name_textView"

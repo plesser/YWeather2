@@ -1,6 +1,7 @@
 package ru.plesser.yweather2.fragments
 
 import android.app.Application
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,7 +25,7 @@ import ru.plesser.yweather2.utils.Loader
 
 private val TAG = "CityFragment"
 
-class CitiesFragment : Fragment(), CitiesAdapter.Listener {
+class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackRequestCities {
 
     private lateinit var binding: FragmentCitiesBinding
     private lateinit var viewModel: YWeatherViewModel
@@ -61,17 +62,20 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
             if (binding.cityEdittext.text.toString().length < 5){
                 Toast.makeText(context, "Min length city is 6 symbols...", Toast.LENGTH_LONG).show()
             } else {
-                var geocoderLiveData = viewModel.requestCities(geocoderKey, binding.cityEdittext.text.toString())
+                var geocoderLiveData = viewModel.requestCities(geocoderKey, binding.cityEdittext.text.toString(), this@CitiesFragment)
                 geocoderLiveData.observe(
                     viewLifecycleOwner,
                     Observer {
                             geocoder ->
                         Log.d(TAG, "------------------------------------------------------- 1")
                         Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
-                citiesList.clear()
-                citiesList.addAll(Loader.getCities(geocoder))
-                adapter.citiesList = citiesList
-                adapter.notifyDataSetChanged()
+                        citiesList.clear()
+                        citiesList.addAll(Loader.getCities(geocoder))
+                        adapter.citiesList = citiesList
+                        adapter.notifyDataSetChanged()
+                        binding.statusTextview.text = "online"
+                        binding.statusTextview.setTextColor(Color.parseColor("#00FF00"))
+
                     }
                 )
             }
@@ -93,6 +97,12 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener {
 
     companion object {
         fun newInstance() = CitiesFragment()
+    }
+
+    override fun setStatusRequestCities(status: String) {
+        Log.d(TAG, status)
+        binding.statusTextview.text = "offline"
+        binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
     }
 
 }

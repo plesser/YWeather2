@@ -10,4 +10,6 @@
     <string name="weather">weather</string>
     <string name="wind">wind</string>
     <string name="online">online</string>
+    <string name="example_city">Удельная</string>
+    <string name="status">status</string>
 </resources>

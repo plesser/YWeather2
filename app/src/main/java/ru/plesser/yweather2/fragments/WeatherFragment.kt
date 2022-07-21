@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso
 import ru.plesser.yweather2.R
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
+import ru.plesser.yweather2.data.RRequests
 import ru.plesser.yweather2.data.template.weather.Weather
 import ru.plesser.yweather2.databinding.FragmentWeatherBinding
 import ru.plesser.yweather2.utils.Assets
@@ -26,7 +27,7 @@ private val TAG = "WeatherFragment"
 
 private val CITY_ID: String = "city_id"
 
-class WeatherFragment: Fragment(){
+class WeatherFragment: Fragment(), RRequests.CallbackRequestWeather{
 
     private lateinit var binding: FragmentWeatherBinding
     private var citiesList: ArrayList<City> = Data.newInstance().cities
@@ -53,11 +54,12 @@ class WeatherFragment: Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(YWeatherViewModel::class.java)
+
         weatherKey = Assets.getKeyYWeather(requireActivity().applicationContext as Application)
 
         initViews()
 
-        var weatherLiveData = viewModel.requestWeather(weatherKey, citiesList.get(position).lat, citiesList.get(position).lon)
+        var weatherLiveData = viewModel.requestWeather(weatherKey, citiesList.get(position).lat, citiesList.get(position).lon, this@WeatherFragment)
         weatherLiveData.observe(viewLifecycleOwner){
             weather ->
             binding.realtempTextView.text = weather.fact.temp.toString()
@@ -128,6 +130,12 @@ class WeatherFragment: Fragment(){
             return weatherFragment
 
         }
+    }
+
+    override fun setStatusRequestWeather(status: String) {
+        Log.d(TAG, status)
+        binding.statusTextview.text = "offline"
+        binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
     }
 
 

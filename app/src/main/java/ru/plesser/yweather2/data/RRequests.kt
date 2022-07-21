@@ -13,10 +13,11 @@ import ru.plesser.yweather2.data.template.weather.Weather
 
 private const val TAG = "RRequests"
 
-class RRequests: ViewModel() {
+class RRequests(): ViewModel() {
 
     private val citiesApi: CitiesAPI
     private val weatherApi: WeatherAPI
+
 
     init {
         val retrofitCities = Retrofit.Builder()
@@ -35,7 +36,7 @@ class RRequests: ViewModel() {
     }
 
 
-    fun requestCitiesRetrofit(geocoderKey: String, city: String): LiveData<Geocoder> {
+    fun requestCitiesRetrofit(geocoderKey: String, city: String, callback: CallbackRequestCities): MutableLiveData<Geocoder> {
         Log.d(TAG, "RRequests.requestCitiesRetrofit")
         val responseLiveData: MutableLiveData<Geocoder> = MutableLiveData()
 
@@ -45,6 +46,7 @@ class RRequests: ViewModel() {
         citiesRequest.enqueue(object : Callback<Geocoder> {
             override fun onFailure(call: Call<Geocoder>, t: Throwable) {
                 Log.d(TAG, "Failed to fetch cities", t)
+                callback.setStatusRequestCities("error")
             }
             override fun onResponse(
                 call: Call<Geocoder>,
@@ -61,7 +63,7 @@ class RRequests: ViewModel() {
 
     }
 
-    fun requestWeatherRetrofit(weatherKey: String, lat: Double, lon: Double): LiveData<Weather> {
+    fun requestWeatherRetrofit(weatherKey: String, lat: Double, lon: Double, callback: CallbackRequestWeather): MutableLiveData<Weather> {
         val responseLiveData: MutableLiveData<Weather> = MutableLiveData()
 
         val weatherRequest: Call<Weather> = weatherApi.getWeather(weatherKey, lat, lon)
@@ -69,6 +71,7 @@ class RRequests: ViewModel() {
         weatherRequest.enqueue(object : Callback<Weather> {
             override fun onFailure(call: Call<Weather>, t: Throwable) {
                 Log.d(TAG, "Failed to fetch weather", t)
+                callback.setStatusRequestWeather("error")
             }
             override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
                 Log.d(TAG, "Response received " + response.body())
@@ -80,4 +83,12 @@ class RRequests: ViewModel() {
         return responseLiveData
     }
 
+
+    interface CallbackRequestCities{
+        fun setStatusRequestCities(status: String)
+    }
+
+    interface CallbackRequestWeather{
+        fun setStatusRequestWeather(status: String)
+    }
 }
