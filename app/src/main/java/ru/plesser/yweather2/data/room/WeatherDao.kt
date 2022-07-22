@@ -7,13 +7,16 @@ import androidx.room.Query
 
 @Dao
 interface WeatherDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertWeather(weatherEntity:WeatherEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCity(cityEntity:CityEntity)
+    @Insert
+    suspend fun insertCity(cityEntity:CityEntity)
 
     @Query("select * from cities where lower(city) like '%'||lower(:city)||'%'")
     fun getCities(city: String?): List<CityEntity>
+
+    @Query("select count(id) from cities where city=:city and lat=:lat and lon=:lon")
+    suspend fun isExistCity(city: String, lat: Double, lon: Double): Int
 
 }

@@ -80,12 +80,14 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackReq
                         binding.statusTextview.text = "online"
                         binding.statusTextview.setTextColor(Color.parseColor("#00FF00"))
 
+                        viewModel.insertCities(citiesList)
+
                     }
                 )
             }
         }
 
-        // надо разобраться почему не работает location в эмуляторе
+        // TODO надо разобраться почему не работает location в эмуляторе
         //getLocation()
     }
 
@@ -131,6 +133,8 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackReq
         Log.d(TAG, status)
         binding.statusTextview.text = "offline"
         binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
+
+
     }
 
 }
