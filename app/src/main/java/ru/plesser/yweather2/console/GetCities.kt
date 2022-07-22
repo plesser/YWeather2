@@ -2,7 +2,7 @@ package ru.plesser.yweather2.console
 
 import com.google.gson.Gson
 import ru.plesser.yweather2.data.template.geocoder.Geocoder
-import ru.plesser.yweather2.utils.Loader
+import ru.plesser.yweather2.utils.Transform
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -43,7 +43,7 @@ fun requestCities(city: String, block:(geocoder: Geocoder)->Unit){
     var myConnection = url.openConnection() as HttpURLConnection
     myConnection.readTimeout = 5000
     val reader = BufferedReader(InputStreamReader(myConnection.inputStream))
-    val geocoder = Gson().fromJson(Loader.getLines(reader), Geocoder::class.java)
+    val geocoder = Gson().fromJson(Transform.getLines(reader), Geocoder::class.java)
     block(geocoder)
 
 }

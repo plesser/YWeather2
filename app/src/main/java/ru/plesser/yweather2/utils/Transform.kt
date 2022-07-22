@@ -25,7 +25,7 @@ import java.util.stream.Collectors
 
 private val TAG = "Loader"
 
-object Loader {
+object Transform {
 
     fun getCities(geocoder: Geocoder) : ArrayList<City>{
         val members = geocoder.response.GeoObjectCollection.featureMember
@@ -34,7 +34,6 @@ object Loader {
             val pos = member.GeoObject.Point.pos
             val lat = pos.split(" ")[1].toDouble()
             val lon = pos.split(" ")[0].toDouble()
-            //println("${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
             Log.d(TAG, "${lat} ${lon} ${member.GeoObject.metaDataProperty.GeocoderMetaData.text}")
             val city: City = City(member.GeoObject.metaDataProperty.GeocoderMetaData.text, lat, lon)
             cities.add(city)

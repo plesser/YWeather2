@@ -1,16 +1,21 @@
 package ru.plesser.yweather2.fragments
 
+import android.Manifest
 import android.app.Application
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,10 +23,9 @@ import ru.plesser.yweather2.adapters.CitiesAdapter
 import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.Data
 import ru.plesser.yweather2.data.RRequests
-import ru.plesser.yweather2.data.template.geocoder.Geocoder
 import ru.plesser.yweather2.databinding.FragmentCitiesBinding
 import ru.plesser.yweather2.utils.Assets
-import ru.plesser.yweather2.utils.Loader
+import ru.plesser.yweather2.utils.Transform
 
 private val TAG = "CityFragment"
 
@@ -70,7 +74,7 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackReq
                         Log.d(TAG, "------------------------------------------------------- 1")
                         Log.d(TAG, "viewModel.cityLiveData is " + geocoder.toString())
                         citiesList.clear()
-                        citiesList.addAll(Loader.getCities(geocoder))
+                        citiesList.addAll(Transform.getCities(geocoder))
                         adapter.citiesList = citiesList
                         adapter.notifyDataSetChanged()
                         binding.statusTextview.text = "online"
@@ -81,7 +85,31 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackReq
             }
         }
 
+        // надо разобраться почему не работает location в эмуляторе
+        //getLocation()
+    }
 
+    fun getLocation(){
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            //val provider = locationManager.getProvider(LocationManager.GPS_PROVIDER)
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000L, 100F, object: LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    Log.d(TAG, "location " + location)
+                }
+
+            })
+        }
     }
 
     override fun onCityClick(id: Int) {
