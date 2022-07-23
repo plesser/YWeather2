@@ -3,12 +3,11 @@ package ru.plesser.yweather2.data
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import ru.plesser.yweather2.data.room.CityEntity
 import ru.plesser.yweather2.data.room.WeatherDatabase
-import ru.plesser.yweather2.data.template.geocoder.Geocoder
 
 private const val DATABASE_NAME = "weather"
 private const val TAG = "WeatherRepository"
@@ -47,6 +46,9 @@ class WeatherRepository private constructor(context: Context) {
         }
     }
 
+    suspend fun getCities(city: String): LiveData<List<CityEntity>> {
+        return weatherDao.getCities(city).asLiveData()
+    }
 
 
     companion object{

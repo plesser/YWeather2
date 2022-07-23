@@ -134,6 +134,19 @@ class CitiesFragment : Fragment(), CitiesAdapter.Listener, RRequests.CallbackReq
         binding.statusTextview.text = "offline"
         binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
 
+        val citiesLiveData = viewModel.getCities(binding.cityEdittext.text.toString())
+
+        citiesLiveData.observe(viewLifecycleOwner) { citiesEntity ->
+            Log.d(TAG, citiesEntity.toString())
+            citiesList.clear()
+            for (cityE in citiesEntity) {
+                val city = City(cityE.city, cityE.lat, cityE.lon)
+                citiesList.add(city)
+            }
+            adapter.citiesList = citiesList
+            adapter.notifyDataSetChanged()
+
+        }
 
     }
 

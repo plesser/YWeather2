@@ -20,6 +20,8 @@ class YWeatherViewModel(): ViewModel() {
     var geocoderLiveData: MutableLiveData<Geocoder> = MutableLiveData()
     var weatherLiveData: MutableLiveData<Weather> = MutableLiveData()
 
+    var citiesLiveData: MutableLiveData<List<CityEntity>> = MutableLiveData()
+
     fun requestCities(geocoderKey: String, city: String, callback: RRequests.CallbackRequestCities):MutableLiveData<Geocoder>{
         geocoderLiveData = RRequests().requestCitiesRetrofit(geocoderKey, city, callback)
         return geocoderLiveData
@@ -35,5 +37,11 @@ class YWeatherViewModel(): ViewModel() {
         weaherRepository.insertCity(citiesList)
     }
 
+    fun getCities(city: String): MutableLiveData<List<CityEntity>> {
+        viewModelScope.launch {
+            citiesLiveData = weaherRepository.getCities(city) as MutableLiveData<List<CityEntity>>
+        }
+        return citiesLiveData
+    }
 
 }
