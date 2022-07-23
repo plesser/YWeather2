@@ -140,23 +140,27 @@ class WeatherFragment: Fragment(), RRequests.CallbackRequestWeather{
 
         weatherLiveData.observe(viewLifecycleOwner){
             weatherEntity ->
-            binding.realtempTextView.text = weatherEntity[0].temp.toString()
-            binding.feeltempTextView.text = weatherEntity[0].feel.toString()
-            binding.windImageView.setImageDrawable(
-                activity?.let {
-                    ContextCompat.getDrawable(
-                        it.applicationContext,
-                        getDirWind(weatherEntity[0].dirWind)
-                    )
-                })
+            if (weatherEntity.size > 0) {
+                binding.realtempTextView.text = weatherEntity[0].temp.toString()
+                binding.feeltempTextView.text = weatherEntity[0].feel.toString()
+                binding.windImageView.setImageDrawable(
+                    activity?.let {
+                        ContextCompat.getDrawable(
+                            it.applicationContext,
+                            getDirWind(weatherEntity[0].dirWind)
+                        )
+                    })
 
-            val ago = (System.currentTimeMillis() - weatherEntity[0].time) / (1000 * 60)
+                val ago = (System.currentTimeMillis() - weatherEntity[0].time) / (1000 * 60)
 
-            Log.d(TAG, "" + weatherEntity[0] + " " + weatherEntity[0].time)
-            binding.statusTextview.text = "offline ($ago minutes ago)"
+                Log.d(TAG, "" + weatherEntity[0] + " " + weatherEntity[0].time)
+                binding.statusTextview.text = "offline ($ago minutes ago)"
 
-            binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
-
+                binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
+            } else {
+                binding.statusTextview.text = "offline"
+                binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
+            }
 
         }
 
