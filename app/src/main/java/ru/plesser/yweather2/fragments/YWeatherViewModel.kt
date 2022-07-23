@@ -1,6 +1,5 @@
 package ru.plesser.yweather2.fragments
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +8,7 @@ import ru.plesser.yweather2.data.City
 import ru.plesser.yweather2.data.RRequests
 import ru.plesser.yweather2.data.WeatherRepository
 import ru.plesser.yweather2.data.room.CityEntity
+import ru.plesser.yweather2.data.room.WeatherEntity
 import ru.plesser.yweather2.data.template.geocoder.Geocoder
 import ru.plesser.yweather2.data.template.weather.Weather
 import java.util.ArrayList
@@ -20,7 +20,8 @@ class YWeatherViewModel(): ViewModel() {
     var geocoderLiveData: MutableLiveData<Geocoder> = MutableLiveData()
     var weatherLiveData: MutableLiveData<Weather> = MutableLiveData()
 
-    var citiesLiveData: MutableLiveData<List<CityEntity>> = MutableLiveData()
+    var citiesEntityLiveData: MutableLiveData<List<CityEntity>> = MutableLiveData()
+    var weatherEntityLiveData: MutableLiveData<List<WeatherEntity>> = MutableLiveData()
 
     fun requestCities(geocoderKey: String, city: String, callback: RRequests.CallbackRequestCities):MutableLiveData<Geocoder>{
         geocoderLiveData = RRequests().requestCitiesRetrofit(geocoderKey, city, callback)
@@ -39,9 +40,24 @@ class YWeatherViewModel(): ViewModel() {
 
     fun getCities(city: String): MutableLiveData<List<CityEntity>> {
         viewModelScope.launch {
-            citiesLiveData = weaherRepository.getCities(city) as MutableLiveData<List<CityEntity>>
+            citiesEntityLiveData = weaherRepository.getCities(city) as MutableLiveData<List<CityEntity>>
         }
-        return citiesLiveData
+        return citiesEntityLiveData
     }
+
+    fun insertWether(city: String, lat: Double, lon: Double, weather: Weather?) = viewModelScope.launch{
+        if (weather != null) {
+            weaherRepository.insertWeather(city, lat, lon, weather)
+        }
+    }
+
+    fun getLastWeather(city: String):MutableLiveData<List<WeatherEntity>>{
+        viewModelScope.launch {
+            weatherEntityLiveData =
+                weaherRepository.getLastWeather(city) as MutableLiveData<List<WeatherEntity>>
+        }
+        return weatherEntityLiveData
+    }
+
 
 }

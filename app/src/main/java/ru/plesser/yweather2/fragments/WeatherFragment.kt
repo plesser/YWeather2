@@ -63,23 +63,24 @@ class WeatherFragment: Fragment(), RRequests.CallbackRequestWeather{
         weatherLiveData.observe(viewLifecycleOwner){
             weather ->
             binding.realtempTextView.text = weather.fact.temp.toString()
-                binding.feeltempTextView.text = weather.fact.feels_like.toString()
-                binding.windImageView.setImageDrawable(
-                    activity?.let {
-                        ContextCompat.getDrawable(
-                            it.applicationContext,
-                            getDirWind(weather.fact.wind_dir)
-                        )
-                    })
-                val icon: String =
-                    "https://yastatic.net/weather/i/icons/funky/dark/${weather.fact.icon}.svg"
-                Log.d(TAG, icon)
-                Picasso.get().load("https://media.citroen.ru/design/frontend/images/logo.png")
-                    .into(binding.citroenImageView);
-                binding.weatherImageView.loadSvg(icon)
-                binding.statusTextview.text = "online"
-                binding.statusTextview.setTextColor(Color.parseColor("#00FF00"))
+            binding.feeltempTextView.text = weather.fact.feels_like.toString()
+            binding.windImageView.setImageDrawable(
+                activity?.let {
+                    ContextCompat.getDrawable(
+                        it.applicationContext,
+                        getDirWind(weather.fact.wind_dir)
+                    )
+                })
+            val icon: String =
+                "https://yastatic.net/weather/i/icons/funky/dark/${weather.fact.icon}.svg"
+            Log.d(TAG, icon)
+            Picasso.get().load("https://media.citroen.ru/design/frontend/images/logo.png")
+                .into(binding.citroenImageView);
+            binding.weatherImageView.loadSvg(icon)
+            binding.statusTextview.text = "online"
+            binding.statusTextview.setTextColor(Color.parseColor("#00FF00"))
 
+            viewModel.insertWether(citiesList.get(position).name, citiesList.get(position).lat, citiesList.get(position).lon, weather)
 
         }
     }
@@ -134,8 +135,31 @@ class WeatherFragment: Fragment(), RRequests.CallbackRequestWeather{
 
     override fun setStatusRequestWeather(status: String) {
         Log.d(TAG, status)
-        binding.statusTextview.text = "offline"
-        binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
+
+        val weatherLiveData = viewModel.getLastWeather(citiesList.get(position).name)
+
+        weatherLiveData.observe(viewLifecycleOwner){
+            weatherEntity ->
+            binding.realtempTextView.text = weatherEntity[0].temp.toString()
+            binding.feeltempTextView.text = weatherEntity[0].feel.toString()
+            binding.windImageView.setImageDrawable(
+                activity?.let {
+                    ContextCompat.getDrawable(
+                        it.applicationContext,
+                        getDirWind(weatherEntity[0].dirWind)
+                    )
+                })
+
+            val ago = (System.currentTimeMillis() - weatherEntity[0].time) / (1000 * 60)
+
+            Log.d(TAG, "" + weatherEntity[0] + " " + weatherEntity[0].time)
+            binding.statusTextview.text = "offline ($ago minutes ago)"
+
+            binding.statusTextview.setTextColor(Color.parseColor("#FF0000"))
+
+
+        }
+
     }
 
 

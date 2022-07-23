@@ -8,6 +8,8 @@ import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import ru.plesser.yweather2.data.room.CityEntity
 import ru.plesser.yweather2.data.room.WeatherDatabase
+import ru.plesser.yweather2.data.room.WeatherEntity
+import ru.plesser.yweather2.data.template.weather.Weather
 
 private const val DATABASE_NAME = "weather"
 private const val TAG = "WeatherRepository"
@@ -46,8 +48,17 @@ class WeatherRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun getCities(city: String): LiveData<List<CityEntity>> {
+    suspend fun insertWeather(city: String, lat: Double, lon: Double, weather: Weather){
+        val weatherEntity = WeatherEntity(null, city, lat, lon, weather.fact.temp, weather.fact.feels_like, weather.fact.wind_dir, weather.fact.icon)
+        weatherDao.insertWeather(weatherEntity)
+    }
+
+    fun getCities(city: String): LiveData<List<CityEntity>> {
         return weatherDao.getCities(city).asLiveData()
+    }
+
+    suspend fun getLastWeather(city: String): LiveData<List<WeatherEntity>> {
+        return weatherDao.getLastWeather(city).asLiveData()
     }
 
 
